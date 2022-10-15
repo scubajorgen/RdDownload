@@ -12,7 +12,9 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -20,14 +22,14 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
+import net.studioblueplanet.mapdatumconvert.DatumCoordinate;
+import net.studioblueplanet.mapdatumconvert.LatLonCoordinate;
+import net.studioblueplanet.mapdatumconvert.MapDatumConvert;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import net.studioblueplanet.mapdatumconvert.MapDatumConvert;
-import net.studioblueplanet.mapdatumconvert.LatLonCoordinate;
-import net.studioblueplanet.mapdatumconvert.DatumCoordinate;
 /**
  * This class downloads the RD Info dataset from PDOK and converts
  * the reference points to the OziExplorer waypoint file
@@ -107,7 +109,7 @@ public class RdInfoParser
         {
             wpt=new Waypoint();
             wpt.name     = (String)exprName.evaluate((Element)nodes.item(j), XPathConstants.STRING);
-            wpt. year     = (String)exprYear.evaluate((Element)nodes.item(j), XPathConstants.STRING);
+            wpt. year    = (String)exprYear.evaluate((Element)nodes.item(j), XPathConstants.STRING);
             wpt.xrd      = (String)exprXrd.evaluate((Element)nodes.item(j), XPathConstants.STRING);
             wpt.yrd      = (String)exprYrd.evaluate((Element)nodes.item(j), XPathConstants.STRING);
             wpt.gps      = (String)exprGps.evaluate((Element)nodes.item(j), XPathConstants.STRING);
@@ -139,9 +141,15 @@ public class RdInfoParser
     private void writeFile(List<Waypoint> wpts) throws Exception
     {
         MapDatumConvert     mdc         =new MapDatumConvert();
-        FileWriter          myWriter    = new FileWriter("waypoints.wpt");
+        FileWriter          myWriter;
         DatumCoordinate     dc;
         LatLonCoordinate    llc;
+        String              fileName;
+        
+        fileName="RdInfo";
+        fileName+=new SimpleDateFormat("yyyyMMdd").format(new Date());
+        fileName+=".wpt";
+        myWriter= new FileWriter(fileName);
         
         myWriter.write("OziExplorer Waypoint File Version 1.1\n");
         myWriter.write("WGS 84\n");
